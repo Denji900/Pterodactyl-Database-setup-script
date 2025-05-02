@@ -27,11 +27,11 @@ prompt_input() {
 
 # Ensure the script is run as root
 if [ "$(id -u)" -ne 0 ]; then
-  echo "❌ This script must be run as root. Please use sudo."
+  echo "This script must be run as root. Please use sudo."
   exit 1
 fi
 
-echo "🔧 Starting Pterodactyl Database Setup..."
+echo "Starting Pterodactyl Database Setup..."
 
 # Prompt for inputs
 prompt_input PTERO_USER "Enter Pterodactyl database username"
