@@ -15,7 +15,7 @@ prompt_input() {
         echo "Input cannot be empty. Please try again."
     done
 }
-@@ -19,16 +14,11 @@ if [[ $EUID -ne 0 ]]; then
+if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
