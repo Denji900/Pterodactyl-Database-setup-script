@@ -10,12 +10,12 @@ prompt_input() {
     while true; do
         read -rp "$1" var
         [[ -n "$var" ]] && { echo "$var"; return; }
-        read -rp "$1" val
-        [[ -n "$val" ]] && { echo "$val"; return; }
         echo "Input cannot be empty. Please try again."
     done
 }
+
 if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root."
     exit 1
 fi
 
@@ -30,16 +30,14 @@ read -rp "Enter network/CIDR to allow via UFW firewall [default: $default_cidr]:
 cidr="${cidr_input:-$default_cidr}"
 
 ufw allow from "$cidr" to any port 3306
-
 ufw allow from 172.16.0.0/14 to any port 3306
 ufw reload
 
 sed -i.bak 's/^bind-address\s*=.*/bind-address = 0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
-@@ -40,22 +30,12 @@ GRANT ALL PRIVILEGES ON *.* TO '$ptero_user'@'%' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
-EOF
 
 mysql -u root <<EOF
+CREATE USER IF NOT EXISTS '$ptero_user'@'%' IDENTIFIED BY '$ptero_pass';
+GRANT ALL PRIVILEGES ON *.* TO '$ptero_user'@'%' WITH GRANT OPTION;
 CREATE DATABASE IF NOT EXISTS \`$normal_db\`;
 CREATE USER IF NOT EXISTS '$normal_user'@'%' IDENTIFIED BY '$normal_pass';
 GRANT ALL PRIVILEGES ON \`$normal_db\`.* TO '$normal_user'@'%';
